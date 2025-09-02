@@ -1,20 +1,23 @@
 "use server";
 
 import { signIn } from "@/auth";
-import prisma from "@/lib//prisma";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 export const signUp = async (params) => {
-  const { firstName, lastName, email, username, password } = params;
+  const { fullName, email, username, password } = params;
+
+  const nameParts = fullName.trim().split(/\s+/);
+  const firstName = nameParts[0];
+  const lastName = nameParts.slice(1).join(" ") || null;
 
   if (!email || !username || !password) {
     return { success: false, error: "Incomplete data" };
   }
   try {
-    const existingUser = prisma.user.findFirst({
+    const existingUser = await prisma.user.findFirst({
       where: {
-        email: email,
-        username: username,
+        OR: [{ email }, { username }],
       },
     });
 
@@ -24,7 +27,7 @@ export const signUp = async (params) => {
 
     const hashesdPass = bcrypt.hashSync(password, 10);
 
-    const newUser = prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         username: username,
         passwordHash: hashesdPass,
@@ -33,6 +36,8 @@ export const signUp = async (params) => {
         lastName,
       },
     });
+
+    await signInWithCredentials({ email, password });
 
     return { success: true, data: newUser };
   } catch (error) {

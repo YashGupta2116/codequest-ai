@@ -1,18 +1,19 @@
 "use client";
 import Image from "next/image";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const handleSignup = () => {
-    redirect("/signup");
+    router.push("/signup");
   };
 
   const handleSignin = () => {
-    redirect("/signin");
+    router.push("/signin");
   };
 
   return (
-    <div>
+    <div className="w-screen h-screen bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364]">
       Home
       <br />
       <button onClick={handleSignup}>Signup</button>
