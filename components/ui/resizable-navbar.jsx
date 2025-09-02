@@ -7,6 +7,7 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "motion/react";
+import { useRouter } from "next/navigation";
 
 import React, { useRef, useState } from "react";
 
@@ -197,9 +198,12 @@ export const MobileNavToggle = ({
 };
 
 export const NavbarLogo = () => {
+  const router = useRouter()
   return (
-    <a
-      href="#"
+    <div
+      onClick={()=>{
+        router.push('/dashboard')
+      }}
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black">
       <img
         src="https://assets.aceternity.com/logo-dark.png"
@@ -207,7 +211,7 @@ export const NavbarLogo = () => {
         width={30}
         height={30} />
       <span className="text-slate-100 font-semibold text-2xl dark:text-white">CodeQuest</span>
-    </a>
+    </div>
   );
 };
 
