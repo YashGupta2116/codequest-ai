@@ -120,3 +120,28 @@
     @apply bg-background text-foreground;
   }
 }
+/* Hide scrollbar but keep scroll functionality */
+/* Thin clean scrollbar style */
+.thin-scroll::-webkit-scrollbar {
+  width: 6px;   /* patla scrollbar */
+}
+
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent; /* koi border/box nahi */
+}
+
+.thin-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.6); /* slate-500 approx */
+  border-radius: 9999px; /* rounded full */
+}
+
+.thin-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.8); /* hover pe thoda light */
+}
+
+/* Firefox support */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.6) transparent;
+}
+
