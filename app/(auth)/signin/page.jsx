@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,12 +15,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Code2, Gamepad2, Trophy, Zap, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signInWithCredentials } from "@/actions/auth";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
-export function CardDemo() {
+export function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      router.push("/dashboard");
+    }
+  }, [status, session, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] flex justify-center items-center">
+        <div className="text-slate-100">Loading...</div>
+      </div>
+    );
+  }
+
+  if (status === "authenticated") {
+    return null;
+  }
 
   const {
     register,
@@ -29,27 +48,19 @@ export function CardDemo() {
   } = useForm();
 
   const handleSignIn = async (data) => {
-    try {
-      const res = await signInWithCredentials({
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
+    const result = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: true,
+      callbackUrl: "/dashboard",
+    });
 
-      if (res?.error) {
-        console.error("Sign in failed:", res.error);
-        return;
-      }
-
-      router.push("/");
-    } catch (err) {
-      console.error("Error during sign in:", err);
-    }
+    return result;
   };
 
   const handleGoogleSignIn = async () => {
     try {
-      await signIn("google", { callbackUrl: "/" });
+      await signIn("google", { callbackUrl: "/dashboard" });
     } catch (error) {
       console.error("Google sign in error:", error);
     }
@@ -57,7 +68,7 @@ export function CardDemo() {
 
   const handleGithubSignIn = async () => {
     try {
-      await signIn("github", { callbackUrl: "/" });
+      await signIn("github", { callbackUrl: "/dashboard" });
     } catch (error) {
       console.error("GitHub sign in error:", error);
     }
@@ -67,7 +78,7 @@ export function CardDemo() {
   };
 
   return (
-    <div className="min-h-screen w-full  bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] flex justify-center items-center p-4 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] flex justify-center items-center p-4 relative overflow-hidden">
       {/* Subtle background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl"></div>
@@ -240,4 +251,4 @@ export function CardDemo() {
   );
 }
 
-export default CardDemo;
+export default SignIn;

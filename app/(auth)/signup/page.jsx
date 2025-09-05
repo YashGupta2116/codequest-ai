@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,11 +15,31 @@ import { Label } from "@/components/ui/label";
 import { Code2, Gamepad2, Trophy, Zap, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signUp } from "@/actions/auth";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
-export function SignUpCard() {
+export function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      router.push("/dashboard");
+    }
+  }, [status, session, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] flex justify-center items-center">
+        <div className="text-slate-100">Loading...</div>
+      </div>
+    );
+  }
+
+  if (status === "authenticated") {
+    return null;
+  }
 
   const {
     register,
@@ -39,7 +59,7 @@ export function SignUpCard() {
         return;
       }
 
-      router.push("/");
+      router.push("/dashboard");
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Try again!");
@@ -52,7 +72,7 @@ export function SignUpCard() {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signIn("google", { callbackUrl: "/" });
+      await signIn("google", { callbackUrl: "/dashboard" });
     } catch (error) {
       console.error("Google sign in error:", error);
     }
@@ -60,7 +80,7 @@ export function SignUpCard() {
 
   const handleGithubSignIn = async () => {
     try {
-      await signIn("github", { callbackUrl: "/" });
+      await signIn("github", { callbackUrl: "/dashboard" });
     } catch (error) {
       console.error("GitHub sign in error:", error);
     }
@@ -285,4 +305,4 @@ export function SignUpCard() {
   );
 }
 
-export default SignUpCard;
+export default SignUp;
