@@ -24,7 +24,7 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       <SessionProvider session={session}>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased  bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364]`}
         >
           {children}
         </body>

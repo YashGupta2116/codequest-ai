@@ -7,10 +7,6 @@ import bcrypt from "bcryptjs";
 export const signUp = async (params) => {
   const { fullName, email, username, password } = params;
 
-  const nameParts = fullName.trim().split(/\s+/);
-  const firstName = nameParts[0];
-  const lastName = nameParts.slice(1).join(" ") || null;
-
   if (!email || !username || !password) {
     return { success: false, error: "Incomplete data" };
   }
@@ -32,8 +28,7 @@ export const signUp = async (params) => {
         username: username,
         passwordHash: hashesdPass,
         email: email,
-        firstName,
-        lastName,
+        fullName,
       },
     });
 
